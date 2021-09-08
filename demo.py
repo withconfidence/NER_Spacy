@@ -3,7 +3,7 @@ import os
 import json
 import spacy
 
-def file_selector(folder_path='..'):
+def file_selector(folder_path='.'):
     filenames = os.listdir(folder_path)
     selected_filename = st.selectbox('Select training JSON data', filenames)
     return os.path.join(folder_path, selected_filename)
