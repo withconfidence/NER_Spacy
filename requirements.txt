@@ -1,0 +1,2 @@
+spacy==3.0.0
+spacy-streamlit>=1.0.0a0
