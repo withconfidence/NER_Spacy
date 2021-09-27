@@ -11,6 +11,8 @@ def file_selector(folder_path='.'):
 
 
 def app():
+    st.title('Model Training')
+
     filename = file_selector()
 
     if os.path.basename(filename).endswith(".json"):

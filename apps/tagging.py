@@ -3,7 +3,7 @@ import os
 import streamlit as st
 import spacy
 nlp = spacy.load('en_core_web_sm')
-anal_data = {}
+json_data = None
 
 
 def get_tagging(doc):
@@ -56,12 +56,11 @@ def file_selector(folder_path='.'):
 
 
 def app():
+    global json_data
     st.title('Text annotation')
     option = st.selectbox(
         'How would you like to input text data?',
         ('File Browser', 'copy & paste'))
-
-    global anal_data
 
     if option == 'File Browser':
         filename = file_selector()
@@ -70,47 +69,50 @@ def app():
 
             # load the training data
             with open(filename) as fp:
-                text_data = ' '.join(fp.readlines())
+                text_list = fp.readlines()
+                text_data = ' '.join([x.strip() for x in text_list])
         else:
             st.write("Invalid file format.")
             return
     else:
-        text_data = st.text_input('Put your text here:')
+        text_data = st.text_area('Put your text here (at least 10 sentences):')
+        text_list = text_data.split('\n')
+
+    st.write(text_list)
 
     if st.button("click here to start"):
-        st.write("- Annotating now ...")
         doc = get_doc(text_data)
-        anal_data = get_tagging(doc)
+        tag_data = get_tagging(doc)
 
-        print_txt = []
-        for ent in anal_data['token']:
-            print_txt.append("{}[{}]".format(ent['text'], ent['tag']))
-        st.write(" ".join(print_txt))
-
-        st.write("- The Named Entity is ...")
-        copy_text_data = text_data
-        for ent in anal_data['entities']:
-            copy_text_data = copy_text_data.replace(ent[0], "({})[{}]".format(ent[0], ent[3]))
-        st.write(copy_text_data)
-
-    if st.button("save to JSON"):
+        # text_length = [len(x) for x in text_list]
         json_data = {
-            "classes": [x[3] for x in anal_data["entities"]],
+            "classes": [x[3] for x in tag_data["entities"]],
             "annotations": []
         }
-        one_item = [text_data.strip(), {"entities": [x[1], x[2], x[3]] for x in anal_data["entities"]}]
-        json_data["annotations"].append(one_item)
+        _pass_length = 0
+        for i, one_line in enumerate(text_list):
+            one_item = [one_line.strip()]
+            cur_length = len(one_line)
+            entity = []
+            for (word, start_char, end_char, _label) in tag_data["entities"]:
+                if _pass_length <= start_char <= end_char <= _pass_length + cur_length:
+                    entity.append([start_char, end_char, _label])
+            if len(entity) > 0:
+                one_item.append({"entities": entity})
 
-        with open("training_data.json", "w") as jsp:
+                json_data["annotations"].append(one_item)
+
+            _pass_length += cur_length
+
+        st.write(json_data)
+
+    if st.button("save to JSON"):
+        if json_data is None:
+            st.write("Invalid JSON data!")
+            return
+        if os.path.isfile("./training_data.json"):
+            os.remove("./training_data.json")
+        with open("./training_data.json", "w") as jsp:
             jsp.write(json.dumps(json_data, indent=2))
 
-
-"""
-with open('../sample.txt') as fp:
-    text_data = ' '.join(fp.readlines())
-
-    st.write("- Annotating now ...")
-    doc = get_doc(text_data)
-    anal_data = get_tagging(doc)
-    print(anal_data)
-# """
+            st.write("Successfully saved. You can forward to training with 'training_data.json'.")
