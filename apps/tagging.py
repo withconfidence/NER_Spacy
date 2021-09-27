@@ -86,7 +86,7 @@ def app():
 
         # text_length = [len(x) for x in text_list]
         json_data = {
-            "classes": [x[3] for x in tag_data["entities"]],
+            "classes": list(set([x[3] for x in tag_data["entities"]])),
             "annotations": []
         }
         _pass_length = 0
