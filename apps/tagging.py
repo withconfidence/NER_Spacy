@@ -85,6 +85,9 @@ def app():
         tag_data = get_tagging(doc)
 
         # text_length = [len(x) for x in text_list]
+        st.write("entities:")
+        st.write(["{} : {}".format(x[0], x[3])for x in tag_data["entities"]])
+
         json_data = {
             "classes": list(set([x[3] for x in tag_data["entities"]])),
             "annotations": []
@@ -104,6 +107,7 @@ def app():
 
             _pass_length += cur_length
 
+        st.write("tagging json:")
         st.write(json_data)
 
     if st.button("save to JSON"):
