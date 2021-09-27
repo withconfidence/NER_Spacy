@@ -47,7 +47,7 @@ def app():
         st.write("    label added: [{}]".format(', '.join(label_list)))
 
         # train the model
-        iters = st.sidebar.number_input('Train iteration number', 5, format='%d')
+        iters = st.sidebar.number_input('Train iteration number', 10, format='%d')
         st.write("- Start training the model now ...")
         optimizer = nlp.begin_training()
         for iter in range(iters):
