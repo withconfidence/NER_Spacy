@@ -5,7 +5,7 @@ from annotated_text import annotated_text
 
 @st.cache(show_spinner=False, allow_output_mutation=True, suppress_st_warning=True)
 def load_models():
-    english_model = spacy.load("./models/en/")
+    english_model = spacy.load('en_core_web_sm')
     models = {"en": english_model}
     return models
 
