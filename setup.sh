@@ -1,4 +1,4 @@
-
+python -m spacy download
 mkdir -p ~/.streamlit/
 
 echo "\
