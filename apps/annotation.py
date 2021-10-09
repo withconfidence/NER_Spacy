@@ -1,13 +1,7 @@
 import streamlit as st
 import spacy
 from annotated_text import annotated_text
-
-
-@st.cache(show_spinner=False, allow_output_mutation=True, suppress_st_warning=True)
-def load_models():
-    english_model = spacy.load('en_core_web_sm')
-    models = {"en": english_model}
-    return models
+nlp = spacy.load('en_core_web_sm')
 
 
 def process_text(doc, selected_entities, anonymize=False):
@@ -35,15 +29,11 @@ def process_text(doc, selected_entities, anonymize=False):
 
 
 def app():
-    models = load_models()
-
-    selected_language = st.sidebar.selectbox("Select a language", options=["en"])
     selected_entities = st.sidebar.multiselect(
         "Select the entities you want to detect",
         options=["LOC", "PER", "ORG", "COMPANY", "EVENT"],
         default=["LOC", "PER", "ORG"],
     )
-    selected_model = models[selected_language]
 
     text_input = st.text_area("Type a text to anonymize")
 
@@ -53,7 +43,7 @@ def app():
         text_input = text_input.decode("utf-8")
 
     anonymize = st.checkbox("Anonymize")
-    doc = selected_model(text_input)
+    doc = nlp(text_input)
     tokens = process_text(doc, selected_entities)
 
     annotated_text(*tokens)
