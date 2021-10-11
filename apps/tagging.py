@@ -2,6 +2,7 @@ import json
 import os
 import streamlit as st
 import spacy
+from annotated_text import annotated_text
 nlp = spacy.load('en_core_web_sm')
 json_data = None
 
@@ -82,11 +83,28 @@ def app():
 
     if st.button("click here to start"):
         doc = get_doc(text_data)
-        tag_data = get_tagging(doc)
 
+        tokens = []
+        entities_list = ["LOC", "PER", "ORG", "NORP", "DATE"]
+        for token in doc:
+            if (token.ent_type_ == "PERSON") & ("PER" in entities_list):
+                tokens.append((token.text, "Person", "#faa"))
+            elif (token.ent_type_ in ["GPE", "LOC"]) & ("LOC" in entities_list):
+                tokens.append((token.text, "Location", "#fda"))
+            elif (token.ent_type_ == "ORG") & ("ORG" in entities_list):
+                tokens.append((token.text, "Organization", "#afa"))
+            elif (token.ent_type_ == "DATE") & ("DATE" in entities_list):
+                tokens.append((token.text, "DATE", "#caa"))
+            elif (token.ent_type_ == "NORP") & ("NORP" in entities_list):
+                tokens.append((token.text, "NORP", "#aca"))
+            else:
+                tokens.append(" " + token.text + " ")
+        annotated_text(*tokens)
+
+        tag_data = get_tagging(doc)
         # text_length = [len(x) for x in text_list]
-        st.write("entities:")
-        st.write(["{} : {}".format(x[0], x[3])for x in tag_data["entities"]])
+        # st.write("entities:")
+        # st.write(["{} : {}".format(x[0], x[3])for x in tag_data["entities"]])
 
         json_data = {
             "classes": list(set([x[3] for x in tag_data["entities"]])),
@@ -107,9 +125,10 @@ def app():
 
             _pass_length += cur_length
 
-        st.write("tagging json:")
-        st.write(json_data)
+        # st.write("tagging json:")
+        # st.write(json_data)
 
+    st.markdown("---")
     if st.button("save to JSON"):
         if json_data is None:
             st.write("Invalid JSON data!")

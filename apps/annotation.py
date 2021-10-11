@@ -1,6 +1,7 @@
 import streamlit as st
 import spacy
 from annotated_text import annotated_text
+
 nlp = spacy.load('en_core_web_sm')
 
 
@@ -42,14 +43,32 @@ def app():
         text_input = uploaded_file.getvalue()
         text_input = text_input.decode("utf-8")
 
-    anonymize = st.checkbox("Anonymize")
+    split_text = text_input.split('\n')
+    sentence_num = len(split_text)
+    st.write("Sentence: {}".format(sentence_num))
+    for x in split_text:
+        print(x)
+
     doc = nlp(text_input)
     tokens = process_text(doc, selected_entities)
 
     annotated_text(*tokens)
 
+    cur_line = 0
+    st.markdown("---")
+    anonymize = st.checkbox("Edit")
+
     if anonymize:
-        st.markdown("**Anonymized text**")
-        st.markdown("---")
-        anonymized_tokens = process_text(doc, selected_entities, anonymize=anonymize)
-        annotated_text(*anonymized_tokens)
+        tag_box = st.empty()
+        tag_box.text_area("tagging: ", split_text[cur_line])
+
+        if st.sidebar.button('Prev'):
+            if cur_line > 0:
+                cur_line -= 1
+                tag_box.text_area("tagging: ", split_text[cur_line])
+                st.write(cur_line)
+        if st.sidebar.button('Next'):
+            if cur_line < sentence_num - 1:
+                cur_line += 1
+                tag_box.text_area("tagging: ", split_text[cur_line])
+                st.write(cur_line)

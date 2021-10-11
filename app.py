@@ -10,8 +10,8 @@ This is a demo for text tagging and annotation model training.
 """)
 
 app.add_app("HOME", home.app)
-app.add_app("Auto-Annotation", tagging.app)
-app.add_app("New Annotation", annotation.app)
+app.add_app("Auto Annotation", tagging.app)
+app.add_app("Manual Annotation", annotation.app)
 app.add_app("Training", model.app)
 
 # the main app
