@@ -46,23 +46,24 @@ def app():
         text_input = uploaded_file.getvalue()
         text_input = text_input.decode("utf-8")
 
-    split_text = text_input.split('\n')
-    sentence_num = len(split_text)
+    if len(text_input) > 0:
+        split_text = text_input.split('\n')
+        sentence_num = len(split_text)
 
-    doc = nlp(text_input)
-    tokens = process_text(doc, selected_entities)
+        doc = nlp(text_input)
+        tokens = process_text(doc, selected_entities)
 
-    annotated_text(*tokens)
+        annotated_text(*tokens)
 
-    st.markdown("---")
-    tag_box = st.empty()
-    tag_box.text_area("tagging: ", split_text[cur_line])
+        st.markdown("---")
+        tag_box = st.empty()
+        tag_box.text_area("tagging: ", split_text[cur_line])
 
-    if st.sidebar.button('Prev'):
-        if cur_line > 0:
-            cur_line = cur_line - 1
-            tag_box.text_area("tagging: ", split_text[cur_line])
-    if st.sidebar.button('Next'):
-        if cur_line < sentence_num - 1:
-            cur_line = cur_line + 1
-            tag_box.text_area("tagging: ", split_text[cur_line])
+        if st.sidebar.button('Prev'):
+            if cur_line > 0:
+                cur_line = cur_line - 1
+                tag_box.text_area("tagging: ", split_text[cur_line])
+        if st.sidebar.button('Next'):
+            if cur_line < sentence_num - 1:
+                cur_line = cur_line + 1
+                tag_box.text_area("tagging: ", split_text[cur_line])
