@@ -2,34 +2,13 @@ import os
 import json
 import streamlit as st
 import streamlit.components.v1 as stc
-from annotated_text import annotated_text
+# from annotated_text import annotated_text
 from annotator import custom_annotator
-import pandas as pd
-import docx2txt
-from PyPDF2 import PdfFileReader
-import pdfplumber
 import spacy
 nlp = spacy.load('en_core_web_sm')
 _tag_list = ["PERSON", "ORG"]
 cur_line = 0
 sentence_num = 0
-
-
-def read_pdf(file):
-	pdfReader = PdfFileReader(file)
-	count = pdfReader.numPages
-	all_page_text = ""
-	for i in range(count):
-		page = pdfReader.getPage(i)
-		all_page_text += page.extractText()
-
-	return all_page_text
-
-
-def read_pdf_with_pdfplumber(file):
-	with pdfplumber.open(file) as pdf:
-	    page = pdf.pages[0]
-	    return page.extract_text()
 
 
 def process_text(doc, selected_entities, anonymize=False):
