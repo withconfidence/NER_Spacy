@@ -51,7 +51,7 @@ def get_doc(text):
 
 
 def file_selector(folder_path='.'):
-    filenames = os.listdir(folder_path)
+    filenames = [os.path.join(folder_path, x) for x in os.listdir(folder_path) if x.endswith('.txt')]
     selected_filename = st.selectbox('Please choose text file for tagging', filenames)
     return os.path.join(folder_path, selected_filename)
 
