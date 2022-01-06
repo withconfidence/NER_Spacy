@@ -1,5 +1,6 @@
 setuptools
 wheel
+pip-upgrader
 spacy==2.3.2
 spacy-streamlit
 st-annotated-text
